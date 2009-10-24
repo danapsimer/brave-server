@@ -16,8 +16,10 @@
 
 package org.braveserver.server.spring;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.braveserver.server.BraveServer;
-import org.braveserver.server.BraveServerMBean;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -30,11 +32,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.RunnableFuture;
+import org.springframework.context.event.ContextStartedEvent;
 
 /**
  * Bootstrap the Server ApplicationContext by loading the given configuration file.
@@ -42,26 +42,62 @@ import java.util.concurrent.RunnableFuture;
  * @author danap@dhptech.com
  * @since Oct 10, 2009 11:00:48 AM
  */
-public class SpringBraveServer implements BraveServerMBean, BraveServer, ApplicationContextAware, ApplicationListener {
+public class SpringBraveServer implements SpringBraveServerMBean, BraveServer, ApplicationContextAware, ApplicationListener<ContextStartedEvent> {
+  @SuppressWarnings("unused")
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SpringBraveServer.class);
+
   private ApplicationContext applicationContext;
   private ConfigurableApplicationContext serverApplicationContext;
   private Resource configFile;
   private CountDownLatch stopLatch = new CountDownLatch(1);
-  private Integer returnValue = 0;
+  private Integer returnValue = null;
+  private boolean cancelled = false;
 
   /**
    * Starts the brave server and awaits the signal to close.
    * @see org.braveserver.server.BraveServer#start()
    */
+  @Override
   public Future<Integer> start() {
-    RunnableFuture<Integer> result = new FutureTask<Integer>(new Callable<Integer>() {
-      @Override
-      public Integer call() throws Exception {
-        stopLatch.await();
-        return returnValue;
-      }
-    });
-    new Thread(result,"brave-server").start();
+	logger.info("starting SpringBraveServer with configFile = {}",configFile);
+	cancelled = false;
+	returnValue = null;
+    Future<Integer> result = new Future<Integer>() {
+
+	  @Override
+	  public boolean cancel(boolean mayInterruptIfRunning) {
+		if ( isDone() ) {
+		  return false;
+		}
+		stopLatch.countDown();
+		return true;
+	  }
+
+	  @Override
+	  public boolean isCancelled() {
+		return cancelled;
+	  }
+
+	  @Override
+	  public boolean isDone() {
+		return stopLatch.getCount() == 1;
+	  }
+
+	  @Override
+	  public Integer get() throws InterruptedException, ExecutionException {
+		stopLatch.await();
+		return returnValue;
+	  }
+
+	  @Override
+	  public Integer get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+		stopLatch.await(timeout, unit);
+		return returnValue;
+	  }
+	};
+
+	if ( applicationContext != null ) {
+	}
     return result;
   }
 
@@ -70,6 +106,8 @@ public class SpringBraveServer implements BraveServerMBean, BraveServer, Applica
    */
   @Override
   public void stop() {
+	closeIfActive();
+	logger.info("Signalling SpringBraveServer to stop with no returlValue");
     stopLatch.countDown();
   }
 
@@ -78,8 +116,10 @@ public class SpringBraveServer implements BraveServerMBean, BraveServer, Applica
    */
   @Override
   public void stop(int returnValue) {
+	closeIfActive();
+	logger.info("Signalling SpringBraveServer to stop with returlValue = {}",returnValue);
     this.returnValue = returnValue;
-    stop();
+    stopLatch.countDown();
   }
 
   /**
@@ -87,8 +127,13 @@ public class SpringBraveServer implements BraveServerMBean, BraveServer, Applica
    */
   @Override
   public void reload() {
+	logger.info("Reloading server application context.");
+	logger.info("Closing server application context...");
     serverApplicationContext.close();
+	logger.info("Refreshing server application context...");
     serverApplicationContext.refresh();
+	logger.info("Starting server application context...");
+	serverApplicationContext.start();
   }
 
   /**
@@ -117,29 +162,37 @@ public class SpringBraveServer implements BraveServerMBean, BraveServer, Applica
   /**
    * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
    */
+  @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     this.applicationContext = applicationContext;
   }
 
   @Override
-  public void onApplicationEvent(ApplicationEvent event) {
-    if ( event instanceof ContextRefreshedEvent ) {
-      ContextRefreshedEvent refreshedEvent = (ContextRefreshedEvent)event;
-      if ( refreshedEvent.getApplicationContext() == applicationContext ) {
-        startServerApplicationContext();
-      }
+  public void onApplicationEvent(ContextStartedEvent event) {
+    if ( event.getApplicationContext() == applicationContext ) {
+      startServerApplicationContext();
     }
   }
   
   protected void startServerApplicationContext() {
     if ( serverApplicationContext != null ) {
-      serverApplicationContext.refresh();
+	  reload();
     } else {
       GenericApplicationContext ctx = new GenericApplicationContext(applicationContext);
       BeanDefinitionReader loader = new XmlBeanDefinitionReader(ctx);
       loader.loadBeanDefinitions(configFile);
+	  logger.info("Refreshing server application context...");
       ctx.refresh();
       serverApplicationContext = ctx;
+	  logger.info("Starting server application context...");
+	  ctx.start();
     }
+  }
+
+  private void closeIfActive() {
+	if (serverApplicationContext != null && serverApplicationContext.isActive()) {
+	  logger.info("Closing server application context...");
+	  serverApplicationContext.close();
+	}
   }
 }

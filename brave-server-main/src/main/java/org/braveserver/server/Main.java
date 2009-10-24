@@ -35,8 +35,8 @@ public class Main {
 
   private static final String BRAVE_SERVER_BEAN_NAME = "braveServer";
   private static final String CONFIG_FILE_BEAN_NAME = "configFile";
-  private static final String BOOTSTRAP_CONTEXT_URL = "classpath:boostrap-context.xml";
-  private static final String DEFAULT_CONFIG_URL = "classpath:default-config.xml";
+  private static final String BOOTSTRAP_CONTEXT_URL = "classpath:/bootstrap-context.xml";
+  private static final String DEFAULT_CONFIG_URL = "classpath:/default-config.xml";
 
   private static final Options options = new Options();
 
@@ -50,7 +50,7 @@ public class Main {
     options.addOption(config);
   }
 
-  public static final int main(String[] args) {
+  public static void main(String[] args) {
 
     try {
       CommandLineParser clp = new PosixParser();
@@ -75,11 +75,19 @@ public class Main {
 
       Future<Integer> result = server.start();
 
-      return result.get();
+	  appCtx.start();
+
+      Integer value = result.get();
+
+	  if ( value == null ) {
+		value = 0;
+	  }
+
+	  System.exit(value);
 
     } catch( Exception e ) {
       e.printStackTrace();
-      return -1;
+      System.exit(-1);
     }
   }
 

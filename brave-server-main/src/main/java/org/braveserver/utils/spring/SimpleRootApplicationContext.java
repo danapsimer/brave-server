@@ -52,6 +52,47 @@ public class SimpleRootApplicationContext extends StaticListableBeanFactory impl
   private List<ApplicationListener> listeners = new ArrayList<ApplicationListener>();
 
   /**
+   * Getter for the ApplicationListeners
+   * 
+   * @return the list of ApplicationListeners.
+   */
+  protected List<ApplicationListener> getApplicationListeners() {
+	return listeners;
+  }
+
+  /**
+   * Get the message source.
+   * @return returns the messageSource
+   */
+  protected MessageSource getMessageSource() {
+	return messageSource;
+  }
+
+  /**
+   * Set the messageSource.
+   * @param messageSource the new messageSource
+   */
+  protected void setMessageSource(MessageSource messageSource) {
+	this.messageSource = messageSource;
+  }
+
+  /**
+   * Gets the resourceResolver.
+   * @return the resourceResolver.
+   */
+  protected ResourcePatternResolver getResourceResolver() {
+	return resourceResolver;
+  }
+
+  /**
+   * Set the resourceResolver.
+   * @param resourceResolver the new value for the resourceResolver.
+   */
+  protected void setResourceResolver(ResourcePatternResolver resourceResolver) {
+	this.resourceResolver = resourceResolver;
+  }
+
+  /**
    * @see org.springframework.beans.factory.support.StaticListableBeanFactory#addBean(String, Object)
    */
   @Override
