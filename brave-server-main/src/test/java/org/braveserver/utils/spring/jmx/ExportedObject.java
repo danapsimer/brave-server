@@ -16,32 +16,12 @@
 
 package org.braveserver.utils.spring.jmx;
 
-import org.springframework.jmx.export.naming.ObjectNamingStrategy;
-import org.springframework.jmx.support.ObjectNameManager;
-
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import java.util.Hashtable;
-
 /**
- * Names an MBean according to its key name, class, and identityHash.  The domain is injected as a bean property.
  *
  * @author danap
- * @since Oct 11, 2009 10:10:36 AM
  */
-public class KeyAndInterfaceNamingStrategy implements ObjectNamingStrategy {
-  private String domainName;
+public class ExportedObject {
+  @SuppressWarnings("unused")
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ExportedObject.class);
 
-  public void setDomainName(String domainName) {
-    this.domainName = domainName;
-  }
-
-  @Override
-  public ObjectName getObjectName(Object managedBean, String beanKey) throws MalformedObjectNameException {
-    Hashtable<String,String> properties = new Hashtable<String,String>();
-    properties.put("name",beanKey);
-    properties.put("class",managedBean.getClass().getName());
-    properties.put("hash","0x"+Integer.toString(System.identityHashCode(managedBean),16));
-    return ObjectNameManager.getInstance(domainName,properties);
-  }
 }

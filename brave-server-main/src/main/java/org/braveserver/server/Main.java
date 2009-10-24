@@ -18,15 +18,12 @@ package org.braveserver.server;
 import org.apache.commons.cli.*;
 import org.braveserver.utils.spring.SimpleRootApplicationContext;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
-import java.io.File;
-import java.net.URL;
 import java.util.concurrent.Future;
 
 /**
