@@ -14,28 +14,15 @@
  * and limitations under the License.                                         *
  ******************************************************************************/
 
-package org.braveserver.server;
+package org.braveserver.server.bootstrap.spring;
+
+import org.braveserver.server.bootstrap.BraveServerMBean;
 
 /**
- * Defines the MBean interface for the BraveServer.
+ * Interface to enable auto exporting of the SpringBraveServer.
  *
  * @author danap
- * @since Oct 11, 2009 11:18:05 AM
+ * @since Oct 11, 2009 11:19:28 AM
  */
-public interface BraveServerMBean {
-
-  /**
-   * Stops the server.
-   */
-  public void stop();
-
-  /**
-   * Stops the server.
-   */
-  public void stop(int returnValue);
-
-  /**
-   * Reload the server.
-   */
-  public void reload();
+public interface SpringBraveServerMBean extends BraveServerMBean {
 }

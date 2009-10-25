@@ -13,7 +13,7 @@
  * implied. See the License for the specific language governing permissions   *
  * and limitations under the License.                                         *
  ******************************************************************************/
-package org.braveserver.server.spring;
+package org.braveserver.server.bootstrap.spring;
 
 import java.util.concurrent.Future;
 

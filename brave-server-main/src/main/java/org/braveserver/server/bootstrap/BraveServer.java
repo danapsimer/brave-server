@@ -14,7 +14,7 @@
  * and limitations under the License.                                         *
  ******************************************************************************/
 
-package org.braveserver.server;
+package org.braveserver.server.bootstrap;
 
 import java.util.concurrent.Future;
 

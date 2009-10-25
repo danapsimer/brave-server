@@ -14,12 +14,12 @@
  * and limitations under the License.                                         *
  ******************************************************************************/
 
-package org.braveserver.server.spring;
+package org.braveserver.server.bootstrap.spring;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.braveserver.server.BraveServer;
+import org.braveserver.server.bootstrap.BraveServer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;

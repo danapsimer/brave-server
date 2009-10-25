@@ -13,7 +13,7 @@
  * implied. See the License for the specific language governing permissions   *
  * and limitations under the License.                                         *
  ******************************************************************************/
-package org.braveserver.server;
+package org.braveserver.server.bootstrap;
 
 import org.apache.commons.cli.*;
 import org.braveserver.utils.spring.SimpleRootApplicationContext;
