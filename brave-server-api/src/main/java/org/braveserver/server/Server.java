@@ -9,6 +9,12 @@ package org.braveserver.server;
 public interface Server {
 
   /**
+   * Get the name of the server.
+   * @return the name of the server.
+   */
+  public String getName();
+
+  /**
    * Start the server.
    * @throws CancelLifecycleOperationException when the server wants to cancel
    *   the shutdown.  The service should always have a a very good reason for

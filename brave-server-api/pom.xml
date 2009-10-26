@@ -13,4 +13,10 @@
   <name>brave-server-api</name>
   <description>Defines the interfaces that various plugin types must impelement,
   in some cases, the interfaces the BraveServer presents to the plugins.</description>
+  <dependencies>
+	<dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>org.springframework.core</artifactId>
+    </dependency>
+  </dependencies>
 </project>

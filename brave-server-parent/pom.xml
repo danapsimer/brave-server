@@ -120,13 +120,113 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<maven.compiler.source>1.6</maven.compiler.source>
 	<maven.compiler.target>1.6</maven.compiler.target>
+	<spring.version>3.0.0.RC1</spring.version>
   </properties>
   <dependencyManagement>
 	<dependencies>
 	  <dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>org.springframework.context</artifactId>
-		<version>3.0.0.RC1</version>
+		<version>${spring.version}</version>
+		<exclusions>
+		  <exclusion>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+		  </exclusion>
+		</exclusions>
+	  </dependency>
+   	  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.core</artifactId>
+		<version>${spring.version}</version>
+		<exclusions>
+		  <exclusion>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+		  </exclusion>
+		</exclusions>
+	  </dependency>
+   	  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.aop</artifactId>
+		<version>${spring.version}</version>
+		<exclusions>
+		  <exclusion>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+		  </exclusion>
+		</exclusions>
+	  </dependency>
+   	  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.beans</artifactId>
+		<version>${spring.version}</version>
+		<exclusions>
+		  <exclusion>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+		  </exclusion>
+		</exclusions>
+	  </dependency>
+   	  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.jdbc</artifactId>
+		<version>${spring.version}</version>
+		<exclusions>
+		  <exclusion>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+		  </exclusion>
+		</exclusions>
+	  </dependency>
+   	  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.jms</artifactId>
+		<version>${spring.version}</version>
+		<exclusions>
+		  <exclusion>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+		  </exclusion>
+		</exclusions>
+	  </dependency>
+   	  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.orm</artifactId>
+		<version>${spring.version}</version>
+		<exclusions>
+		  <exclusion>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+		  </exclusion>
+		</exclusions>
+	  </dependency>
+   	  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.test</artifactId>
+		<version>${spring.version}</version>
+		<exclusions>
+		  <exclusion>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+		  </exclusion>
+		</exclusions>
+	  </dependency>
+   	  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.transaction</artifactId>
+		<version>${spring.version}</version>
+		<exclusions>
+		  <exclusion>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+		  </exclusion>
+		</exclusions>
+	  </dependency>
+   	  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.web</artifactId>
+		<version>${spring.version}</version>
 		<exclusions>
 		  <exclusion>
 			<groupId>org.apache.commons</groupId>
@@ -174,4 +274,17 @@
 	  </dependency>
 	</dependencies>
   </dependencyManagement>
+  <build>
+	<pluginManagement>
+	  <plugins>
+		<plugin>
+		  <artifactId>maven-compiler-plugin</artifactId>
+		  <configuration>
+			<source>1.6</source>
+			<target>1.6</target>
+		  </configuration>
+		</plugin>
+	  </plugins>
+	</pluginManagement>
+  </build>
 </project>
