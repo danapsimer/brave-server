@@ -24,7 +24,7 @@
 
   <bean
     id="braveServer"
-    class="org.braveserver.server.spring.SpringBraveServer"
+    class="org.braveserver.server.bootstrap.spring.SpringBraveServer"
     p:configFile-ref="configFile"/>
 
   <bean
