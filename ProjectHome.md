@@ -1,0 +1,7 @@
+The current crop of JEE servers either make no real attempt at dependency management or use an overkill approach like OSGi.  The Brave Server endeavors to be a universal container that can deploy multiple applications in the same JVM while isolating them from one another's dependencies where appropriate and allowing sharing of dependencies where appropriate.
+
+It will do this by utilizing dependency data that is available in most components today: The Maven POM file.  Other tools will be built to convert Ivy dependency data to POM data so that jars built with that tool can also be used.  Also, a tool will be built to allow the user of the component to specify dependency information.
+
+In addition to dependency management, the Brave Server will allow for deployments that contain the minimal set of JEE components necessary.  If no JNDI service is required, none will be deployed.  If an HTTP server is not required, one will not be started.  Also, it will be extensible, allowing various implementations of the services needed to be utilized.
+
+An effort will be made to allow embedding of multiple implementations of key server components like Servlet Engines, EJB implementations, and the like.

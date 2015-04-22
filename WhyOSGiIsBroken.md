@@ -1,0 +1,21 @@
+# Introduction #
+
+OSGi has been used for many years as a foundational technology for the Eclipse platform and other similar applications.  It is growing in popularity in the Embedded market.  However, the most hype I have been seeing around it has been OSGi for the Enterprise.  I think this is a mistake.  OSGi makes several fundamental changes to the way the JVM's ClassLoader system works that break many existing libraries and applications.
+
+I, personally, was tasked with deploying a mature non-OSGi service model API into an OSGi container.  This API is highly complicated because it accesses many of our back-end systems using multiple technologies including EJB2, JMS, JNDI, SOAP, and SQL.  After many **weeks** of trial and error and pain, I got the system running.  In the course of this project, I had to make fundamental changes to some of the configuration and startup mechanisms.  We went down many dead-ends trying to get the Spring based API to work with Spring-DM.
+
+In what follows, I will explain why I think OSGi is broken technology.  There are fundamental assumptions that OSGi makes that are simply wrong and, in some cases, change or disable critical JVM/Java Class Library behavior.
+
+# The Context Class Loader #
+
+The Context Class Loader is defined for each Thread and can be acquired by each thread to control what Class Loader to use when loading resources and other classes.  In many of the enabling technologies used by Enterprise applications, the Context Class Loader is central to allowing classes loaded in parent class loaders to be able to manipulate classes defined in child class loaders.  For instance the JNDI code in the Java Class Library uses the Context Class Loader to load the InitialContext class that is defined in the javax.naming.initial.context system property.  It has to do this because the JNDI classes are always loaded in the System Class Loader which is the parent class loader of all other class loaders but the InitialContext class is almost always loaded by a child class loader, e.g. the WAR class loader in a Servlet based application.
+
+OSGi breaks the ContextClassLoader mechanism because it does not manage it and therefore it is not set to the proper value in many situations.  In one case, I had two bundles and one used classes from the other.  When the first bundle, let's call it A, called into the second, we'll call this one B, and the B attempted to use JNDI I got a `ClassNotFoundException` because the context class loader was set to bundle A not bundle B.  In the WARs that my API is usually deployed into the libraries are deployed into the same class loader, the WAR class loader.  In order to fix this issue, I had to modify code in A that would set the Context Class Loader to the proper value before calling B.
+
+The next version of OSGi is supposed to take steps to address this issue.  I have not read too much on how they are going to accomplish this and whether it will be a complete solution or a partial one.  However, I do know quite a bit about Java byte code and the JVM's architecture and I can tell you that they will not be able to achieve a complete solution without some rather invasive instrumentation that is bound to create inefficiencies that many applications will not be able to tolerate.  Doubtless, much of this will be optional so it will only be applied where essential but that presents a different set of problems.  Specifically, how do you know what code needs to be instrumented and what code does not?
+
+# Package Level Compartmentalization #
+
+The OSGi component architecture is centered around the importing and exporting of packages.  This means that a bundle will only import a package from one other bundle.  There may be many bundles in the same OSGi environment that provide a particular package but for a given client bundle only one bundle can provide classes for those packages.  This makes a fundamental assumption that all the classes in a particular package are contained in a single bundle.  This is not a restriction that the JVM applies to class packaging.  **Therefore, OSGi redefines what a package means in Java.**
+
+_**This article is not finished**_
